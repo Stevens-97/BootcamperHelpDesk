@@ -2,8 +2,8 @@
 {
     public interface IResponseService
     {
-        List<Response> GetResponses(int id);
-        Response GetSingleResponse(int id, int questionId);
-        List<Response> AddResponses(List<Response> newResponses);
+        Task<ServiceResponse<List<GetResponsesResponseDto>>> GetResponses(int id);
+        Task<ServiceResponse<GetResponsesResponseDto>> GetSingleResponse(int id, int questionId);
+        Task<ServiceResponse<List<GetResponsesResponseDto>>> AddResponses(List<AddResponsesRequestDto> newResponses);
     }
 }

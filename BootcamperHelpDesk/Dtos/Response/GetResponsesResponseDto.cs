@@ -1,6 +1,6 @@
-﻿namespace bootcamper_helpdesk.Models
+﻿namespace bootcamper_helpdesk.Dtos.Response
 {
-    public class Response
+    public class GetResponsesResponseDto
     {
         public int Id { get; set; }
         public string? Answer { get; set; }

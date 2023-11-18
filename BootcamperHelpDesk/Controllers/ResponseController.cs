@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using bootcamper_helpdesk.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace bootcamper_helpdesk.Controllers
 {
@@ -15,22 +16,22 @@ namespace bootcamper_helpdesk.Controllers
         }
 
         [HttpGet("getSurveyResponses/{id}")]
-        public ActionResult<List<Response>> GetResponses(int id)
+        public async Task<ActionResult<ServiceResponse<List<GetResponsesResponseDto>>>> GetResponses(int id)
         {
-            return Ok(_responseService.GetResponses(id));
+            return Ok(await _responseService.GetResponses(id));
         }
 
         [HttpGet("GetSingleResponse")]
-        public ActionResult<List<Response>> GetSingleResponse(int id, int questionId)
+        public async Task<ActionResult<ServiceResponse<List<GetResponsesResponseDto>>>> GetSingleResponse(int id, int questionId)
         {
-            return Ok(_responseService.GetSingleResponse(id, questionId));
+            return Ok(await _responseService.GetSingleResponse(id, questionId));
         }
 
         [HttpPost("PostSurveyResponses")]
-        public ActionResult<List<Response>> AddResponses(List<Response> newResponses)
+        public async Task<ActionResult<ServiceResponse<List<GetResponsesResponseDto>>>> AddResponses(List<AddResponsesRequestDto> newResponses)
         {
 
-            return Ok(_responseService.AddResponses(newResponses));
+            return Ok(await _responseService.AddResponses(newResponses));
         }
     }
 }

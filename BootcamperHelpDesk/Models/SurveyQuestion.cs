@@ -1,4 +1,4 @@
-﻿namespace BootcamperHelpDesk.Models
+﻿namespace bootcamper_helpdesk.Models
 {
     public class SurveyQuestion
     {
