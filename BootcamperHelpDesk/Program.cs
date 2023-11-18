@@ -1,5 +1,9 @@
-global using BootcamperHelpDesk.Models;
+global using bootcamper_helpdesk.Models;
 global using bootcamper_helpdesk.Services.ResponseService;
+global using bootcamper_helpdesk.Services.UserService;
+global using bootcamper_helpdesk.Dtos.User;
+global using bootcamper_helpdesk.Dtos.Response;
+global using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +13,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<IResponseService, ResponseService>();
 
 var app = builder.Build();
