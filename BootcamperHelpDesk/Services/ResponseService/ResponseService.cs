@@ -1,6 +1,4 @@
-﻿using bootcamper_helpdesk.Models;
-
-namespace bootcamper_helpdesk.Services.ResponseService
+﻿namespace bootcamper_helpdesk.Services.ResponseService
 {
     public class ResponseService : IResponseService
     {
@@ -19,14 +17,30 @@ namespace bootcamper_helpdesk.Services.ResponseService
         public async Task<ServiceResponse<List<GetResponsesResponseDto>>> GetResponses(int id)
         {
             var serviceResponse = new ServiceResponse<List<GetResponsesResponseDto>>();
-            serviceResponse.Data = responses.Select(c => _mapper.Map<GetResponsesResponseDto>(c)).ToList();  
+            try
+            {
+                serviceResponse.Data = responses.Select(c => _mapper.Map<GetResponsesResponseDto>(c)).ToList();
+
+            } catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetResponsesResponseDto>> GetSingleResponse(int id, int questionId)
         {
             var serviceResponse = new ServiceResponse<GetResponsesResponseDto>();
-            serviceResponse.Data = _mapper.Map<GetResponsesResponseDto>(responses);
+            try
+            {
+                serviceResponse.Data = _mapper.Map<GetResponsesResponseDto>(responses);
+            } catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
             return serviceResponse;
         }
 
@@ -34,14 +48,20 @@ namespace bootcamper_helpdesk.Services.ResponseService
         {
             
             var serviceResponse = new ServiceResponse<List<GetResponsesResponseDto>>();
-
-            var updatedResponses = _mapper.Map<List<Response>>(newResponses);
-            foreach (Response singleResponse in updatedResponses)
+            try
             {
-                singleResponse.Id = responses.Max(c => c.Id) + 1;
-                responses.Add(singleResponse);
+                var updatedResponses = _mapper.Map<List<Response>>(newResponses);
+                foreach (Response singleResponse in updatedResponses)
+                {
+                    singleResponse.Id = responses.Max(c => c.Id) + 1;
+                    responses.Add(singleResponse);
+                }
+                serviceResponse.Data = responses.Select(c => _mapper.Map<GetResponsesResponseDto>(c)).ToList();
+            } catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
             }
-            serviceResponse.Data = responses.Select(c => _mapper.Map<GetResponsesResponseDto>(c)).ToList();
 
             return serviceResponse;
         }
