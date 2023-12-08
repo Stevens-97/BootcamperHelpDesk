@@ -6,6 +6,8 @@
         {
             CreateMap<Response,GetResponsesResponseDto>();
             CreateMap<AddResponsesRequestDto, Response>();
+            CreateMap<User, GetUserResponseDto>();
+            CreateMap<AddUserRequestDto, User>();
         }
     }
 }
