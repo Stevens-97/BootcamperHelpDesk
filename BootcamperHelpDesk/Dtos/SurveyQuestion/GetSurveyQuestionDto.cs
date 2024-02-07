@@ -1,6 +1,6 @@
-﻿namespace bootcamper_helpdesk.Models
+﻿namespace bootcamper_helpdesk.Dtos.SurveyQuestion
 {
-    public class SurveyQuestion
+    public class GetSurveyQuestionDto
     {
         public int Id { get; set; }
         public string? SurveyId { get; set; }

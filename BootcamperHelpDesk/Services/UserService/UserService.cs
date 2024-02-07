@@ -1,20 +1,18 @@
-﻿using bootcamper_helpdesk.Models;
+﻿using bootcamper_helpdesk.Data;
+using bootcamper_helpdesk.Models;
 
 namespace bootcamper_helpdesk.Services.UserService
 {
     public class UserService : IUserService
     {
         private readonly IMapper _mapper;
+        private readonly DataContext _context;
 
-        public UserService(IMapper mapper)
+        public UserService(IMapper mapper, DataContext context)
         {
             _mapper = mapper;
+            _context = context;
         }
-
-        private static List<User> users = new List<User> {
-            new User{Id = 1, FirstName = "Elliott", LastName = "Stevens", AutherisationLevel = 1},
-            new User{Id = 2, FirstName = "Dani", LastName = "Smith", AutherisationLevel = 1 }
-            };
 
         public async Task<ServiceResponse<GetUserResponseDto>> AddUser(AddUserRequestDto newUser)
         {
@@ -23,8 +21,8 @@ namespace bootcamper_helpdesk.Services.UserService
             try
             {
                 var user = _mapper.Map<User>(newUser);
-                user.Id = users.Max(c => c.Id + 1);
-                users.Add(user);
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<GetUserResponseDto>(user);
             } catch (Exception ex)
             {
@@ -40,7 +38,8 @@ namespace bootcamper_helpdesk.Services.UserService
             var serviceResponse = new ServiceResponse<GetUserResponseDto>();
             try
             {
-                var user = _mapper.Map<GetUserResponseDto>(users.FirstOrDefault(c => c.Id == id));
+                var dbResponse = await _context.Users.FindAsync(id) ?? throw new Exception($"User with id {id} was not found");
+                var user = _mapper.Map<GetUserResponseDto>(dbResponse);
                 serviceResponse.Data = user;
             } catch (Exception ex)
             {
@@ -56,9 +55,9 @@ namespace bootcamper_helpdesk.Services.UserService
             var serviceResponse = new ServiceResponse<GetUserResponseDto>();
             try
             {
-                var userToRemove = users.FirstOrDefault(c => c.Id == id) ?? throw new Exception($"User with Id {id} is not found");
-                users.Remove(userToRemove);
-                serviceResponse.Data = _mapper.Map<GetUserResponseDto>(userToRemove);
+                var dbResponse = await _context.Users.FindAsync(id) ?? throw new Exception($"User with Id {id} was not found");
+                _context.Remove(dbResponse);
+                serviceResponse.Data = _mapper.Map<GetUserResponseDto>(dbResponse);
             } catch (Exception ex)
             {
                 serviceResponse.Success = false;
@@ -68,18 +67,19 @@ namespace bootcamper_helpdesk.Services.UserService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetUserResponseDto>> UpdateUser(UpdateUserRequestDto updatedUser)
+        public async Task<ServiceResponse<GetUserResponseDto>> UpdateUser(GetUserResponseDto updatedUser)
         {
             var serviceResponse = new ServiceResponse<GetUserResponseDto>();
 
             try
             {
-                var user = users.FirstOrDefault(c => c.Id == updatedUser.Id) ?? throw new Exception($"User with Id {updatedUser.Id} is not found");
-                user.FirstName = updatedUser.FirstName;
-                user.LastName = updatedUser.LastName;
-                user.Email = updatedUser.Email;
-                user.Password = updatedUser.Password;
-                serviceResponse.Data = _mapper.Map<GetUserResponseDto>(user);
+                var dbResponse = await _context.Users.FindAsync(updatedUser.Id) ?? throw new Exception($"User with the id {updatedUser.Id} was not found");
+                dbResponse.FirstName = updatedUser.FirstName;
+                dbResponse.LastName = updatedUser.LastName;
+                dbResponse.Email = updatedUser.Email;
+                dbResponse.Password = updatedUser.Password;
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = _mapper.Map<GetUserResponseDto>(updatedUser);
             } catch (Exception ex)
             {
                 serviceResponse.Success = false;

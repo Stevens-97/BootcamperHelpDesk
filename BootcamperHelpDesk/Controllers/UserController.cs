@@ -1,7 +1,4 @@
-﻿using bootcamper_helpdesk.Models;
-using Microsoft.AspNetCore.Mvc;
-
-namespace bootcamper_helpdesk.Controllers
+﻿namespace bootcamper_helpdesk.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

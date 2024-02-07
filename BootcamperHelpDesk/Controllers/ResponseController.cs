@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace bootcamper_helpdesk.Controllers
+﻿namespace bootcamper_helpdesk.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -14,10 +12,10 @@ namespace bootcamper_helpdesk.Controllers
             _responseService = responseService;
         }
 
-        [HttpGet("getSurveyResponses/{id}")]
-        public async Task<ActionResult<ServiceResponse<List<GetResponsesResponseDto>>>> GetResponses(int id)
+        [HttpGet("getSurveyResponses")]
+        public async Task<ActionResult<ServiceResponse<List<GetResponsesResponseDto>>>> GetUserSurveyResponses(int userId, int surveyId)
         {
-            var response = await _responseService.GetResponses(id);
+            var response = await _responseService.GetUserSurveyResponses(userId, surveyId);
 
             if (response == null)
             {

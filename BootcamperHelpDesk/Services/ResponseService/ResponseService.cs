@@ -3,23 +3,21 @@
     public class ResponseService : IResponseService
     {
         private readonly IMapper _mapper;
+        private readonly DataContext _context;
 
-        public ResponseService(IMapper mapper)
+        public ResponseService(IMapper mapper, DataContext context)
         {
             _mapper = mapper;
+            _context = context;
         }
 
-        private static List<Response> responses = new List<Response> {
-            new Response(),
-            new Response()
-        };
-
-        public async Task<ServiceResponse<List<GetResponsesResponseDto>>> GetResponses(int id)
+        public async Task<ServiceResponse<List<GetResponsesResponseDto>>> GetUserSurveyResponses(int userId, int surveyId)
         {
             var serviceResponse = new ServiceResponse<List<GetResponsesResponseDto>>();
             try
             {
-                serviceResponse.Data = responses.Select(c => _mapper.Map<GetResponsesResponseDto>(c)).ToList();
+                var dbResponses = await _context.Responses.Where(c=> c.SurveryId == surveyId && c.UserId == userId).ToListAsync() ?? throw new Exception($"No responses found for user {userId} for the survey {surveyId}");
+                serviceResponse.Data = dbResponses.Select(c => _mapper.Map<GetResponsesResponseDto>(c)).ToList();
 
             } catch (Exception ex)
             {
@@ -34,7 +32,8 @@
             var serviceResponse = new ServiceResponse<GetResponsesResponseDto>();
             try
             {
-                serviceResponse.Data = _mapper.Map<GetResponsesResponseDto>(responses);
+                var dbResponse = await _context.Responses.FindAsync(id) ?? throw new Exception($"No response with an id of {id} was found");
+                serviceResponse.Data = _mapper.Map<GetResponsesResponseDto>(dbResponse);
             } catch (Exception ex)
             {
                 serviceResponse.Success = false;
@@ -50,13 +49,15 @@
             var serviceResponse = new ServiceResponse<List<GetResponsesResponseDto>>();
             try
             {
+                var dbResponses = await _context.Responses.ToListAsync();
+
                 var updatedResponses = _mapper.Map<List<Response>>(newResponses);
                 foreach (Response singleResponse in updatedResponses)
                 {
-                    singleResponse.Id = responses.Max(c => c.Id) + 1;
-                    responses.Add(singleResponse);
+                    dbResponses.Add(singleResponse);
                 }
-                serviceResponse.Data = responses.Select(c => _mapper.Map<GetResponsesResponseDto>(c)).ToList();
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = dbResponses.Select(c => _mapper.Map<GetResponsesResponseDto>(c)).ToList();
             } catch (Exception ex)
             {
                 serviceResponse.Success = false;
